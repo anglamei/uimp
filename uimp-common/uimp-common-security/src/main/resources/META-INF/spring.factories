@@ -1,0 +1,7 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.eyue.uimp.common.security.component.GlobalExceptionHandlerResolver,\
+  com.eyue.uimp.common.security.component.UimpTokenEnhancer,\
+  com.eyue.uimp.common.security.component.UimpSecurityInnerAspect,\
+  com.eyue.uimp.common.security.listener.AuthenticationFailureEventListener,\
+  com.eyue.uimp.common.security.listener.AuthenticationSuccessEventListener
+

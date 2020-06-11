@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.eyue.uimp.common.sequence.SequenceAutoConfiguration

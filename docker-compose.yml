@@ -1,0 +1,152 @@
+# 使用说明 V3.8.0
+# 1. 使用docker-compose  宿主机不需要配置host来发现
+# 2. 无需修改源码，根目录  docker-compose up 即可
+# 3. 静静等待服务启动
+
+version: '2'
+services:
+  uimp-mysql:
+    build:
+      context: ./db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    restart: always
+    container_name: uimp-mysql
+    image: uimp-mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - ./uimp-mysql:/var/lib/mysql
+    command: --lower_case_table_names=1
+
+  uimp-xxl:
+    container_name: uimp-xxl
+    image: xuxueli/xxl-job-admin:2.2.0
+    restart: always
+    environment:
+      PARAMS: "--server.port=9080 --spring.datasource.url=jdbc:mysql://uimp-mysql:3306/uimpx_job?Unicode=true&characterEncoding=UTF-8 --spring.datasource.username=root --spring.datasource.password=root"
+    ports:
+      - 9080:9080
+
+  uimp-redis:
+    container_name: uimp-redis
+    image: redis:5.0.7
+    restart: always
+    ports:
+      - 6379:6379
+
+  uimp-minio:
+    container_name: uimp-minio
+    image: minio/minio
+    command: server /data
+    ports:
+      - 9000:9000
+    volumes:
+      - ./data:/data
+      - ./config:/root/.minio
+    environment:
+      - MINIO_DOMAIN=uimp-minio
+      - MINIO_ACCESS_KEY=uimp
+      - MINIO_SECRET_KEY=uimp
+
+  uimp-register:
+    build:
+      context: ./uimp-register
+    restart: always
+    container_name: uimp-register
+    image: uimp-register
+    ports:
+      - 8848:8848
+
+  uimp-gateway:
+    build:
+      context: ./uimp-gateway
+    restart: always
+    container_name: uimp-gateway
+    image: uimp-gateway
+    ports:
+      - 9999:9999
+
+  uimp-auth:
+    build:
+      context: ./uimp-auth
+    restart: always
+    container_name: uimp-auth
+    image: uimp-auth
+
+  uimp-upms:
+    build:
+      context: ./uimp-upms/uimp-upms-biz
+    restart: always
+    container_name: uimp-upms
+    image: uimp-upms
+
+  uimp-monitor:
+    build:
+      context: ./uimp-visual/uimp-monitor
+    restart: always
+    image: uimp-monitor
+    container_name: uimp-monitor
+    ports:
+      - 5001:5001
+
+  uimp-daemon-quartz:
+    build:
+      context: ./uimp-visual/uimp-daemon-quartz
+    restart: always
+    image: uimp-daemon-quartz
+    container_name: uimp-daemon-quartz
+
+  uimp-daemon-elastic-job:
+    build:
+      context: ./uimp-visual/uimp-daemon-elastic-job
+    restart: always
+    image: uimp-daemon-elastic-job
+    container_name: uimp-daemon-elastic-job
+
+  uimp-codegen:
+    build:
+      context: ./uimp-visual/uimp-codegen
+    restart: always
+    image: uimp-codegen
+    container_name: uimp-codegen
+
+  uimp-mp-platform:
+    build:
+      context: ./uimp-visual/uimp-mp-platform
+    restart: always
+    image: uimp-mp-platform
+    container_name: uimp-mp-platform
+
+  uimp-pay-platform:
+    build:
+      context: ./uimp-visual/uimp-pay-platform
+    restart: always
+    image: uimp-pay-platform
+    container_name: uimp-pay-platform
+
+  uimp-oa-platform:
+    build:
+      context: ./uimp-visual/uimp-oa-platform
+    restart: always
+    image: uimp-oa-platform
+    container_name: uimp-oa-platform
+
+  uimp-tx-manager:
+    build:
+      context: ./uimp-visual/uimp-tx-manager
+    restart: always
+    image: uimp-tx-manager
+    container_name: uimp-tx-manager
+    ports:
+      - 5004:5004
+      - 9998:9998
+
+  uimp-sentinel:
+    build:
+      context: ./uimp-visual/uimp-sentinel-dashboard
+    restart: always
+    image: uimp-sentinel
+    container_name: uimp-sentinel
+    ports:
+      - 5020:5020
